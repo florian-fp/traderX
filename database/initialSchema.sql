@@ -1,12 +1,12 @@
-Drop Table Trades IF EXISTS;
+DROP TABLE IF EXISTS Trades;
 
-Drop Table AccountUsers IF EXISTS; 
+DROP TABLE IF EXISTS AccountUsers; 
 
-Drop Table Positions IF EXISTS; 
+DROP TABLE IF EXISTS Positions; 
 
-Drop Table Accounts IF EXISTS; 
+DROP TABLE IF EXISTS Accounts; 
 
-Drop Sequence ACCOUNTS_SEQ IF EXISTS;
+DROP SEQUENCE IF EXISTS ACCOUNTS_SEQ;
 
 CREATE TABLE Accounts ( ID INTEGER PRIMARY KEY, DisplayName VARCHAR (50) ) ; 
 
@@ -18,7 +18,7 @@ CREATE TABLE Positions ( AccountID INTEGER , Security VARCHAR(15) , Updated TIME
 
 Alter Table Positions ADD FOREIGN KEY (AccountID) References Accounts(ID) ; 
 
-CREATE TABLE Trades ( ID Varchar (50) Primary Key, AccountID INTEGER, Created TIMESTAMP, Updated TIMESTAMP, Security VARCHAR (15) ,  Side VARCHAR(10) check (Side in ('Buy','Sell')),  Quantity INTEGER check Quantity > 0 , State VARCHAR(20) check (State in ('New', 'Processing', 'Settled', 'Cancelled'))) ;  
+CREATE TABLE Trades ( ID Varchar (50) Primary Key, AccountID INTEGER, Created TIMESTAMP, Updated TIMESTAMP, Security VARCHAR (15) ,  Side VARCHAR(10) check (Side in ('Buy','Sell')),  Quantity INTEGER check (Quantity > 0) , State VARCHAR(20) check (State in ('New', 'Processing', 'Settled', 'Cancelled'))) ;  
 
 Alter Table Trades Add Foreign Key (AccountID) references Accounts(ID); 
 
@@ -57,14 +57,14 @@ INSERT into AccountUsers (AccountID, Username) VALUES (44044, 'user01');
 INSERT into AccountUsers (AccountID, Username) VALUES (44044, 'user06'); 
  
 
-INSERT into Trades(ID, Created, Updated, Security, Side, Quantity, State, AccountID) VALUES('TRADE-22214-AABBCC', NOW(), NOW(), 'IBM', 'Sell', 100, 'Settled', 22214); 
-INSERT into Trades(ID, Created, Updated, Security, Side, Quantity, State, AccountID) VALUES('TRADE-22214-DDEEFF', NOW(), NOW(), 'MS', 'Buy', 1000, 'Settled', 22214); 
-INSERT into Trades(ID, Created, Updated, Security, Side, Quantity, State, AccountID) VALUES('TRADE-22214-GGHHII', NOW(), NOW(), 'C', 'Sell', 2000, 'Settled', 22214); 
+INSERT into Trades(ID, Created, Updated, Security, Side, Quantity, State, AccountID) VALUES('TRADE-22214-AABBCC', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'IBM', 'Sell', 100, 'Settled', 22214); 
+INSERT into Trades(ID, Created, Updated, Security, Side, Quantity, State, AccountID) VALUES('TRADE-22214-DDEEFF', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'MS', 'Buy', 1000, 'Settled', 22214); 
+INSERT into Trades(ID, Created, Updated, Security, Side, Quantity, State, AccountID) VALUES('TRADE-22214-GGHHII', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'C', 'Sell', 2000, 'Settled', 22214); 
 
-INSERT into Positions (AccountID, Security, Updated, Quantity) VALUES(22214, 'MS',NOW(), 1000); 
-INSERT into Positions (AccountID, Security, Updated, Quantity) VALUES(22214, 'IBM',NOW(), -100); 
-INSERT into Positions (AccountID, Security, Updated, Quantity) VALUES(22214, 'C',NOW(), -2000); 
+INSERT into Positions (AccountID, Security, Updated, Quantity) VALUES(22214, 'MS', CURRENT_TIMESTAMP, 1000); 
+INSERT into Positions (AccountID, Security, Updated, Quantity) VALUES(22214, 'IBM', CURRENT_TIMESTAMP, -100); 
+INSERT into Positions (AccountID, Security, Updated, Quantity) VALUES(22214, 'C', CURRENT_TIMESTAMP, -2000); 
 
 
-INSERT into Trades(ID, Created, Updated, Security, Side, Quantity, State, AccountID) VALUES('TRADE-52355-AABBCC', NOW(), NOW(), 'BAC', 'Sell', 2400, 'Settled', 52355); 
-INSERT into Positions (AccountID, Security, Updated, Quantity) VALUES(52355, 'BAC',NOW(), -2400); 
+INSERT into Trades(ID, Created, Updated, Security, Side, Quantity, State, AccountID) VALUES('TRADE-52355-AABBCC', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'BAC', 'Sell', 2400, 'Settled', 52355); 
+INSERT into Positions (AccountID, Security, Updated, Quantity) VALUES(52355, 'BAC', CURRENT_TIMESTAMP, -2400);   

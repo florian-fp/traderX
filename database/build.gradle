@@ -12,17 +12,17 @@ plugins {
 }
 
 dependencies {
-   implementation 'com.h2database:h2:2.3.232'
+   implementation 'org.postgresql:postgresql:42.7.4'
 }
 
 application {
     // Define the main class for the application.
-    mainClass = 'org.h2.tools.Console'
+    mainClass = 'org.postgresql.Driver'
 }
 
 jar {
     manifest {
-        attributes "Main-Class": "org.h2.tools.Console"
+        attributes "Main-Class": "org.postgresql.Driver"
     }
 
     from {
