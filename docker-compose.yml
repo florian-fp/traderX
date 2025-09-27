@@ -1,25 +1,21 @@
 services:
   database:
     restart: always
+    image: postgres:16
     environment:
+      - POSTGRES_DB=${DATABASE_NAME:-traderx}
+      - POSTGRES_USER=${DATABASE_DBUSER:-postgres}
+      - POSTGRES_PASSWORD=${DATABASE_DBPASS:-postgres}
       - DATABASE_WEB_HOSTNAMES=${TRADERX_FQDN:-localhost}
-    image: database
-    build:
-      context: database
-      dockerfile: Dockerfile
-    working_dir: /database
     expose:
-      - 18082
-      - 18083
-      - 18084
+      - 5432
     ports:
-      - 18082:18082
-      - 18083:18083
-      - 18084:18084
+      - 5432:5432
     volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/initialSchema.sql:/docker-entrypoint-initdb.d/initialSchema.sql
       # Mount the root folder that contains .git
       - .:/workspace:cached
-    command: ./run.sh
     networks:
       - localnet
   reference-data:
@@ -213,3 +209,6 @@ services:
 networks:
   localnet:
     driver: bridge
+
+volumes:
+  postgres_data:
