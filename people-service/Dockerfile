@@ -1,20 +1,24 @@
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0-noble AS build
-ARG TARGETARCH
-WORKDIR /source
-COPY PeopleService.WebApi/PeopleService.WebApi.csproj PeopleService.WebApi/
-COPY PeopleService.Core/PeopleService.Core.csproj PeopleService.Core/
-RUN dotnet restore PeopleService.WebApi/PeopleService.WebApi.csproj -a $TARGETARCH
-COPY PeopleService.WebApi/ PeopleService.WebApi/
-COPY PeopleService.Core/ PeopleService.Core/
+FROM node:20-alpine AS builder
 
-FROM build AS publish
-WORKDIR /source/PeopleService.WebApi
-RUN dotnet publish PeopleService.WebApi.csproj -p:PublishSingleFile=true -a $TARGETARCH --self-contained true -c release -o /app
-
-FROM mcr.microsoft.com/dotnet/runtime-deps:9.0-noble-chiseled
 WORKDIR /app
-COPY --from=publish /app .
+
+COPY package*.json ./
+RUN npm ci --only=production && npm cache clean --force
+
+COPY . .
+RUN npm run build
+
+FROM node:20-alpine AS runtime
+
+WORKDIR /app
+
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/data ./data
+
 EXPOSE 18089
-ENV ASPNETCORE_HTTP_PORTS=18089
-ENV ASPNETCORE_ENVIRONMENT=Development
-ENTRYPOINT ["./PeopleService.WebApi"]
+
+ENV NODE_ENV=production
+ENV PEOPLE_SERVICE_PORT=18089
+
+CMD ["node", "dist/main.js"]

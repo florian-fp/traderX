@@ -1,29 +1,49 @@
-# FINOS | TraderX Sample Trading App | People Service
+# People Service (Node.js)
 
-![DEV Only Warning](http://badgen.net/badge/warning/not-for-production/red)
-![Local Dev Machine Supported](http://badgen.net/badge/windows-dev/supported/green)
+This is the Node.js/NestJS implementation of the People Service, migrated from the original .NET Core version.
 
-## Description 
-The people service is used for managing users in the system, and associating them with accounts.
+## Overview
 
- * Returns information about a person by logonId or employeeId
- * Returns the list of persons whose logonId or fullName containes the search text
- * Returns if the logonId or employeeId can be associated to a valid person
+The People Service provides directory functionality for the TraderX application, allowing users to:
+- Look up people by logon ID or employee ID
+- Search for people by name or logon ID
+- Validate person existence
 
-Default Port is 18089.
+## API Endpoints
 
-TODO: Get this port configurable by env var PEOPLE_SERVICE_PORT
+- `GET /People/GetPerson?LogonId=user01` - Get a specific person
+- `GET /People/GetMatchingPeople?SearchText=alice` - Search for people
+- `GET /People/ValidatePerson?LogonId=user01` - Validate person exists
 
-## Building and Running
+## Running the Service
+
+### Development
 ```bash
-$ cd PeopleService.WebApi
-$ dotnet run
+npm install
+npm run start:dev
 ```
 
-## Accessing the Swagger URL
+### Production
+```bash
+npm run build
+npm run start:prod
+```
 
-Visit the forwarded port `/swagger` to open the SwaggerUI.
+### Docker
+```bash
+docker build -t people-service .
+docker run -p 18089:18089 people-service
+```
 
-Example URL:
+## Configuration
 
-`/People/GetPerson?LogonId=user01`
+- `PEOPLE_SERVICE_PORT`: Port to run the service on (default: 18089)
+- `NODE_ENV`: Environment mode (development/production)
+
+## Data Source
+
+The service loads people data from `data/people.json` at startup. The data is cached in memory for performance.
+
+## Migration Notes
+
+This service was migrated from .NET Core to Node.js/NestJS to standardize the technology stack. It maintains full API compatibility with the original implementation.

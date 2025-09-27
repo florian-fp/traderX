@@ -66,10 +66,12 @@ services:
       - 18089
     ports:
       - 18089:18089
+    environment:
+      - PEOPLE_SERVICE_PORT=18089
+      - NODE_ENV=production
     volumes:
       # Mount the root folder that contains .git
       - .:/workspace:cached
-    command: /PeopleService.WebApi dotnet run
     networks:
       - localnet
   account-service:
