@@ -1,29 +1,59 @@
 # FINOS | TraderX Sample Trading App | People Service
 
-![DEV Only Warning](http://badgen.net/badge/warning/not-for-production/red)
-![Local Dev Machine Supported](http://badgen.net/badge/windows-dev/supported/green)
+![DEV Only Warning](https://badgen.net/badge/warning/not-for-production/red) ![Local Dev Machine Supported](https://badgen.net/badge/local-dev/supported/green)
 
-## Description 
-The people service is used for managing users in the system, and associating them with accounts.
+## Description
 
- * Returns information about a person by logonId or employeeId
- * Returns the list of persons whose logonId or fullName containes the search text
- * Returns if the logonId or employeeId can be associated to a valid person
+The people service is used for managing users in the system, and associating them with accounts. It provides the following functionality:
 
-Default Port is 18089.
+- Returns information about a person by logonId or employeeId
+- Returns the list of persons whose logonId or fullName contains the search text
+- Returns if the logonId or employeeId can be associated to a valid person
 
-TODO: Get this port configurable by env var PEOPLE_SERVICE_PORT
+## Prerequisites
 
-## Building and Running
+This project requires .NET Core runtime to be installed on your system.
+
+## Configuration
+
+The following environment variables can be used to configure the service:
+
+| Environment Variable Name | Default Value | Description |
+| ------------------------- | ------------- | ----------- |
+| PEOPLE_SERVICE_PORT | 18089 | Port for the people service |
+
+## Building
+
 ```bash
-$ cd PeopleService.WebApi
-$ dotnet run
+cd PeopleService.WebApi
+dotnet build
 ```
 
-## Accessing the Swagger URL
+## Running the Application
 
-Visit the forwarded port `/swagger` to open the SwaggerUI.
+```bash
+cd PeopleService.WebApi
+dotnet run
+```
 
-Example URL:
+The service runs on port 18089 by default.
 
-`/People/GetPerson?LogonId=user01`
+## API Documentation
+
+The API documentation is available via:
+
+- Swagger UI: http://localhost:18089/swagger
+
+Example API endpoint:
+
+```
+GET /People/GetPerson?LogonId=user01
+```
+
+## Testing
+
+### Unit Tests
+
+```bash
+dotnet test
+```

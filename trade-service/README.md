@@ -1,61 +1,81 @@
 # FINOS | TraderX Sample Trading App | Trading Service
 
-![DEV Only Warning](https://badgen.net/badge/warning/not-for-production/red) ![Local Dev Machine Supported](http://badgen.net/badge/local-dev/supported/green)
+![DEV Only Warning](https://badgen.net/badge/warning/not-for-production/red) ![Local Dev Machine Supported](https://badgen.net/badge/local-dev/supported/green)
 
-A simple application that accepts new trade requests, validates their account and security
-and publishes them onto a trade feed for further processing
+## Description
 
-# How to run the application (WIP)
+A simple application that accepts new trade requests, validates their account and security, and publishes them onto a trade feed for further processing.
 
-- Check out the source code from git
-- Build it with gradlew (once the code is in place)
-- ``gradlew bootRun``
+## Prerequisites
 
-# Configuration
+This service requires the following components to be running:
+- Database service
+- Account service (for account validation)
+- Reference data service (for security validation)
+- Trade feed service (for publishing trades)
 
-You can use environment variables to override certain values. These are the default ones,
-so no need to override them if you are happy with these values!
+## Configuration
 
-   $ export TRADING_SERVICE_PORT=XXXXX
-   $ export ACCOUNT_SERVICE_URL=http://HOSTPORT
-   $ export REFERENCE_DATA_SERVICE_URL=http://HOSTPORT
-   $ export TRADE_FEED_ADDRESS=HOSTPORT
+The following environment variables can be used to configure the service:
 
-Or you can also use command line arguments:
-    
-   $ gradlew bootRun --args='--TRADING_SERVICE_PORT=XXXX'
-   
-The app by default runs on port `18092` and you can access the swagger on http://localhost:18092/swagger-ui.html
+| Environment Variable Name | Default Value | Description |
+| ------------------------- | ------------- | ----------- |
+| TRADING_SERVICE_PORT | 18092 | Port for the trading service |
+| ACCOUNT_SERVICE_URL | http://localhost:18088 | URL for the account service |
+| REFERENCE_DATA_SERVICE_URL | http://localhost:18085 | URL for the reference data service |
+| TRADE_FEED_ADDRESS | http://localhost:18086 | Address for the trade feed |
 
-# API documentation
+You can also use command line arguments:
 
-The API documentation is available via swagger:
+```bash
+./gradlew bootRun --args='--TRADING_SERVICE_PORT=18092'
+```
 
-http://localhost:18092/api-docs
+## Building
 
-And via UI:
+```bash
+./gradlew build
+```
 
-http://localhost:18092/swagger-ui.html
+## Running the Application
 
+```bash
+./gradlew bootRun
+```
 
+The service runs on port 18092 by default.
 
-## Simple Testing of Position Service`
+## API Documentation
 
-You can run a mock of this service by installing @stoplight/prism 
+The API documentation is available via:
 
-This statically uses the example content in the OpenAPI spec to mock the service (you can specify `--dynamic` to let it be more creative)
+- JSON format: http://localhost:18092/api-docs
+- Swagger UI: http://localhost:18092/swagger-ui.html
+
+## Testing
+
+### Unit Tests
+
+```bash
+./gradlew test
+```
+
+### Mock Service Testing
+
+You can run a mock of this service by installing `@stoplight/prism-cli`:
 
 ```bash
 # Only need to do this once for your machine
 sudo npm install -g @stoplight/prism-cli
 ```
 
-Run prism to mock your OpenAPI spec as follows (Specify `port` as you see fit)
+Run prism to mock your OpenAPI spec as follows:
+
 ```bash
 prism --cors --port 18092 mock openapi.yaml
 ```
 
-You can then try out your requests against the mock service as follows: (or from a browser)
+You can then try out your requests against the mock service:
 
 ```bash
 curl -X 'POST' \
