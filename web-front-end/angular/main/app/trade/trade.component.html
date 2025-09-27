@@ -15,6 +15,22 @@
             <button type="button" id="createTicketBtn" class="btn btn-sm btn-primary mb-2" (click)="openTicket(ticketComponent)">
                 Create Trade Ticket
             </button>
+            <button 
+                type="button" 
+                class="btn btn-success ms-2 mb-2" 
+                (click)="startVoiceCommand()" 
+                [disabled]="isVoiceListening || !accountModel"
+                *ngIf="isVoiceSupported()">
+                <i class="fas fa-microphone" [class.fa-spin]="isVoiceListening"></i>
+                {{ isVoiceListening ? 'Listening...' : 'Voice Trade' }}
+            </button>
+            <button 
+                type="button" 
+                class="btn btn-warning ms-2 mb-2" 
+                (click)="stopVoiceCommand()" 
+                *ngIf="isVoiceListening">
+                Stop
+            </button>
             <ng-template #ticketComponent>
                 <app-trade-ticket [stocks]="stocks" [account]="accountModel" (create)="createTradeTicket($event)" (cancel)="closeTicket()">
                 </app-trade-ticket>
@@ -28,6 +44,20 @@
             >
                 {{ createTicketResponse | json }}</alert
             >
+            
+            <alert
+                *ngIf="voiceCommand"
+                type="info"
+                [dismissible]="true">
+                <strong>Voice Command:</strong> {{ voiceCommand }}
+            </alert>
+            
+            <alert
+                *ngIf="voiceError"
+                type="danger"
+                [dismissible]="true">
+                <strong>Voice Error:</strong> {{ voiceError }}
+            </alert>
         </div>
     </div>
 

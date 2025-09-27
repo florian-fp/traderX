@@ -6,7 +6,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { SelectChangeEvent } from '@mui/material';
 import { socket } from '../socket';
 import { GetPositions, GetTrades } from '../hooks';
-import { CreateAccount, CreateAccountUser, CreateTradeButton } from '../ActionButtons';
+import { CreateAccount, CreateAccountUser, CreateTradeButton, VoiceTradeButton } from '../ActionButtons';
 import { ColDef } from 'ag-grid-community';
 import { PositionData, TradeData } from './types';
 import { AccountsDropdown } from '../AccountsDropdown';
@@ -69,6 +69,7 @@ return (
 		</div>
 		<div className="action-buttons" style={{width: "100%", display: "flex"}}>
 			<CreateTradeButton accountId={selectedId} />
+			<VoiceTradeButton accountId={selectedId} />
 			<CreateAccount />
 			<CreateAccountUser accountId={selectedId} />
 		</div>
