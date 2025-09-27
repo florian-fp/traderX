@@ -8,12 +8,16 @@ This is designed to play the role of a SQL database that runs standalone as part
 
 This uses H2 Java-based database as a standalone server, has NO authentication by default, and initializes with an empty SQL schema every time it is started.
 
-## Default Port Numbers
-| Protocol | Port Number |
-| :--- | :--- |
-| TCP | 18082 |
-| PG | 18083 |
-| HTTP | 18084 |
+## Configuration
+
+The following environment variables can be used to configure the service:
+
+| Environment Variable Name | Default Value | Description |
+| ------------------------- | ------------- | ----------- |
+| DATABASE_TCP_PORT | 18082 | TCP protocol port |
+| DATABASE_PG_PORT | 18083 | PostgreSQL protocol port |
+| DATABASE_WEB_PORT | 18084 | HTTP web console port |
+| DATABASE_WEB_HOSTNAMES | localhost,127.0.0.1 | Comma-delimited list of allowed hostnames for web console |
  
 ## Connecting to this database remotely
 You can use the `$DATABASE_TCP_PORT`  or `$DATABASE_PG_PORT` and the database URL in JDBC is `jdbc:h2:./_data/traderx`

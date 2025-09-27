@@ -1,48 +1,58 @@
 # FINOS | TraderX Sample Trading App | Trade Processor
 
-![DEV Only Warning](https://badgen.net/badge/warning/not-for-production/red) ![Local Dev Machine Supported](http://badgen.net/badge/local-dev/supported/green)
+![DEV Only Warning](https://badgen.net/badge/warning/not-for-production/red) ![Local Dev Machine Supported](https://badgen.net/badge/local-dev/supported/green)
 
-# trade-processor
+## Description
 
-A simple application that subscribes to trade-feed pubsub engine, and 'processes' trades. This initially stores them in the database as pending trades and marks them as processed, reporting each phase change on thei appropriate trade-feed as a notification. As trades are settled, it also recalculates any position changes and persists and broadcasts those changes as well.
- 
-# How to run the application (WIP)
+A simple application that subscribes to trade-feed pubsub engine, and 'processes' trades. This initially stores them in the database as pending trades and marks them as processed, reporting each phase change on the appropriate trade-feed as a notification. As trades are settled, it also recalculates any position changes and persists and broadcasts those changes as well.
 
-- Check out the source code from git
-- change any ports needed
-- ``gradlew bootRun``
+## Prerequisites
 
-# Configuration
+This service requires the following components to be running:
+- Database service
+- Trade feed service (for subscribing to trade events)
 
-The easiest way to reconfigure the application is by editing properties in:
+## Configuration
 
-    `src/main/resources/application.properties`
+The following environment variables can be used to configure the service:
 
-Alternatively you can use environment variables to override certain values:
+| Environment Variable Name | Default Value | Description |
+| ------------------------- | ------------- | ----------- |
+| TRADE_PROCESSOR_SERVICE_PORT | 18091 | Port for the trade processor service |
+| TRADE_FEED_ADDRESS | http://localhost:18086 | URL for the trade feed service |
+| DATABASE_URL | jdbc:h2:tcp://localhost:18082/traderx | Database connection URL |
+| DATABASE_USERNAME | sa | Database username |
+| DATABASE_PASSWORD | sa | Database password |
 
-   `export TRADE_PROCESSOR_SERVICE_PORT=18091`
+The easiest way to reconfigure the application is by editing properties in `src/main/resources/application.properties`.
 
-Or you can use command line arguments:
-    
-   $ gradlew bootRun --args='--server.port=18091'
-   
-The app by default runs on port 18091
+You can also use command line arguments:
 
-## Trade Feed Location
+```bash
+./gradlew bootRun --args='--server.port=18091'
+./gradlew bootRun --args='--trade.feed.address=http://localhost:18086'
+```
 
-You can either specify `TRADE_FEED_ADDRESS` as an environment variable (should be a URL in the current SocketIO implementation) or specify the app property per below
+You can see all configuration details in [src/main/resources/application.properties](src/main/resources/application.properties).
 
-To specify the host and the port for the TradeFeed instance to subscribe to use the `trade.feed.address` property using one of the ways describe above, like
+## Building
 
-   $ gradlew bootRun --args='--trade.feed.address=http://localhost:18086
+```bash
+./gradlew build
+```
 
-## Database settings
+## Running the Application
 
-To specify the database properties, the following properties should be used
+```bash
+./gradlew bootRun
+```
 
-    spring.datasource.url=jdbc:h2:tcp://localhost:18082/traderx
-    spring.datasource.username=sa
-    spring.datasource.password=sa
+The service runs on port 18091 by default.
 
+## Testing
 
-You can see all configuration details in [src/main/resources/application.properties](application.properties)
+### Unit Tests
+
+```bash
+./gradlew test
+```
