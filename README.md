@@ -7,9 +7,36 @@
 
 <img align="right" src="./docs/img/2023_TraderX_Vertical.png" alt="TraderX Logo" width="250"/>
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Architecture](#architecture)
+  - [System Architecture](#system-architecture)
+  - [Technology Stack](#technology-stack)
+  - [Polyglot Architecture Benefits](#polyglot-architecture-benefits)
+- [Key Application Flows](#key-application-flows)
+  - [Account Management](#account-management)
+  - [Trade Execution](#trade-execution)
+  - [Position Updates](#position-updates)
+- [Components](#components)
+- [Quick Start](#quick-start)
+- [Deployment Options](#deployment-options)
+  - [Docker Compose (Recommended)](#docker-compose-recommended)
+  - [Manual Setup](#manual-setup)
+  - [Kubernetes](#kubernetes)
+  - [GitHub Codespaces](#github-codespaces)
+- [Development](#development)
+  - [Corporate Environments](#corporate-environments)
+- [Project Demo](#project-demo)
+- [Getting Involved](#getting-involved)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Overview
+
 TraderX is a Sample Trading Application, designed to be a distributed reference application 
 in the financial services domain which can serve as a starting point for experimentation 
-with various techniques and other open source projects.  It is designed to be simple
+with various techniques and other open source projects. It is designed to be simple
 and accessible to developers of all backgrounds, with minimal pre-assumptions, and it 
 can serve as a starting point for educational and experimentation purposes.
 
@@ -20,16 +47,188 @@ to be as vanilla as possible, to preserve its approachability by developers of a
 It contains Java, NodeJS, Python, .NET components that communicate over REST APIs and
 messaging systems and are able to showcase a wide range of technical challenges to solve.
 
-More detailed information about this project can be found in the website which is generated
-from the code under the `docs` directory of this project.
+**Key Features:**
+- **Distributed Architecture**: Multiple services communicating via REST APIs and messaging
+- **Polyglot Implementation**: Java, Node.js, Python, .NET components
+- **Real-time Updates**: WebSocket-based trade and position streaming
+- **Account Management**: User and account administration capabilities
+- **Trade Execution**: Complete trade lifecycle from submission to settlement
+- **Position Tracking**: Real-time position and trade blotter functionality
+
+## Architecture
+
+### System Architecture
+
+The TraderX system follows a microservices architecture with clear separation of concerns. Each service handles specific business capabilities and communicates through well-defined APIs.
+
+```mermaid
+graph TB
+    subgraph "Client Layer"
+        WebGUI[Web GUI<br/>Angular/React]
+        Trader[Trader<br/>User]
+    end
+    
+    subgraph "API Gateway Layer"
+        WebGUI
+    end
+    
+    subgraph "Business Services"
+        AccountSvc[Account Service<br/>Java/Spring Boot]
+        TradeSvc[Trade Service<br/>Java/Spring Boot]
+        PositionSvc[Position Service<br/>Python/Flask]
+        PeopleSvc[People Service<br/>.NET Core]
+        RefDataSvc[Reference Data Service<br/>Node.js]
+    end
+    
+    subgraph "Processing Layer"
+        TradeProcessor[Trade Processor<br/>Java/Spring Boot]
+        TradeFeed[Trade Feed<br/>Node.js/Socket.IO]
+    end
+    
+    subgraph "Data Layer"
+        Database[(Database<br/>PostgreSQL)]
+        UserDirectory[(User Directory<br/>LDAP)]
+    end
+    
+    Trader --> WebGUI
+    
+    WebGUI --> AccountSvc
+    WebGUI --> TradeSvc
+    WebGUI --> PositionSvc
+    WebGUI --> PeopleSvc
+    WebGUI --> RefDataSvc
+    WebGUI --> TradeFeed
+    
+    TradeSvc --> TradeFeed
+    TradeSvc --> AccountSvc
+    TradeSvc --> RefDataSvc
+    
+    TradeProcessor --> TradeFeed
+    TradeProcessor --> Database
+    
+    AccountSvc --> Database
+    AccountSvc --> PeopleSvc
+    PositionSvc --> Database
+    PeopleSvc --> UserDirectory
+    
+    TradeFeed --> WebGUI
+    
+    style WebGUI fill:#e1f5fe
+    style Database fill:#f3e5f5
+    style UserDirectory fill:#f3e5f5
+    style TradeFeed fill:#fff3e0
+```
+
+### Technology Stack
+
+TraderX demonstrates a polyglot architecture using multiple programming languages and frameworks:
+
+| **Service** | **Technology Stack** | **Purpose** |
+|-------------|---------------------|-------------|
+| **Web Frontend** | TypeScript, Angular/React, Bootstrap | Interactive trading interface |
+| **Account Service** | Java, Spring Boot | Account management and validation |
+| **Trade Service** | Java, Spring Boot | Trade order processing and validation |
+| **Position Service** | Python, Flask | Position and trade history queries |
+| **People Service** | .NET Core | User directory integration |
+| **Reference Data** | Node.js, NestJS | Securities reference data |
+| **Trade Processor** | Java, Spring Boot | Asynchronous trade settlement |
+| **Trade Feed** | Node.js, Socket.IO | Real-time messaging and streaming |
+| **Database** | PostgreSQL | Persistent data storage |
+
+### Polyglot Architecture Benefits
+
+The diverse technology stack in TraderX serves several educational and practical purposes:
+
+- **Language Diversity**: Demonstrates how different languages excel in different domains (Java for enterprise services, Python for data processing, Node.js for real-time communication)
+- **Framework Showcase**: Illustrates various frameworks and their strengths (Spring Boot for microservices, Flask for lightweight APIs, Socket.IO for real-time features)
+- **Integration Patterns**: Shows how heterogeneous systems can work together through standard protocols (REST, WebSockets, SQL)
+- **Learning Opportunities**: Provides developers exposure to multiple technology stacks in a single, cohesive application
+- **Real-world Simulation**: Reflects typical enterprise environments where different teams may use different technologies
 
 
-## Project Demo and Overview Presentation
+## Key Application Flows
 
-Learn more about the project - including a brief demo, in the Keynote Demo session 
-that was presented at the [Open Source in Finance Forum 2023](https://events.linuxfoundation.org/open-source-finance-forum-new-york/)
+TraderX implements several core business flows that demonstrate typical trading system operations:
 
-[![TraderX Overview Video - OSFF 2023](./docs/img/2023_osff_video_thumb.png)](https://youtu.be/tSKDJlRYkm0?list=PLmPXh6nBuhJueQS5q-5IU3-0vmZEIUbz0&t=400)
+### Account Management
+
+Initial account loading and user management flow:
+
+```mermaid
+sequenceDiagram
+    participant W as Web GUI
+    participant A as Account Service
+    participant P as People Service
+    participant D as Database
+    participant L as User Directory
+    
+    W->>A: Load List of Accounts
+    A->>D: Query for all Accounts
+    D->>A: Return result set
+    A->>W: Return list of accounts
+    
+    Note over W,L: User Management Flow
+    W->>P: Lookup user to add
+    P->>L: Query LDAP for People records
+    L->>P: Return people records
+    P->>W: Return search results
+    W->>A: Add User to Account
+    A->>P: Validate Username
+    A->>D: Insert/Update Account-User Mapping
+    A->>W: Return success/failure status
+```
+
+### Trade Execution
+
+Complete trade submission and validation flow:
+
+```mermaid
+sequenceDiagram
+    participant W as Web GUI
+    participant R as Reference Data Service
+    participant T as Trade Service
+    participant A as Account Service
+    participant F as Trade Feed
+    
+    W->>R: Load ticker list 
+    R->>W: Return ticker list
+    W->>T: Submit trade (acct,ticker,side,qty)
+    T->>R: Validate Ticker
+    T->>A: Validate Account Number
+    T->>F: Publish new Trade Event (trades/new)
+    T->>W: Trade Submission Complete
+```
+
+### Position Updates
+
+Trade processing and position management flow:
+
+```mermaid
+sequenceDiagram
+    participant W as Web GUI
+    participant F as Trade Feed
+    participant TP as Trade Processor
+    participant P as Position Service
+    participant D as Database
+    
+    Note over W,D: Initial Position Loading
+    W->>P: Load Trades and Positions (account)
+    P->>D: Query Trades,Positions for Account
+    P->>W: Return Trades and Positions for Account
+    W->>F: Subscribe to Trade,Position updates
+    
+    Note over F,D: Trade Processing
+    F->>TP: New Trade Event (trades/new)
+    TP->>D: Insert New Trade
+    TP->>F: Publish New TradeEvent (accounts/$id/trades)
+    F->>W: New Trade Created
+    TP->>D: Update Trade as Executed
+    TP->>D: Insert or Update Position (account, ticker, quantity)
+    TP->>F: Publish TradeEvent update (accounts/$id/trades)
+    F->>W: Trade Updated
+    TP->>F: Publish PositionEvent (accounts/$id/positions)
+    F->>W: Position Updated
+```
 
 
 ## Project Components
@@ -66,9 +265,9 @@ There are a number of ways to run TraderX locally. You should choose the method 
 - [Run locally using Docker & Docker Compose](#run-locally-using-docker--docker-compose)
 - [Run locally using Kubernetes](#run-locally-using-kubernetes)
 
-## Run locally manually
+#### Port Configuration
 
-In order to get things working together, it is recommended to select a range of ports to provide all running processes with, so that the pieces can interconnect as needed.  To run this all up 'by hand' here are default ports which are used, and you can easily export these variables to your favorite shell. 
+Export these environment variables for manual setup:
 
 ```bash
 export DATABASE_TCP_PORT=18082
@@ -81,41 +280,84 @@ export PEOPLE_SERVICE_PORT=18089
 export POSITION_SERVICE_PORT=18090
 export TRADE_PROCESSOR_SERVICE_PORT=18091
 export TRADING_SERVICE_PORT=18092
-export WEB_SERVICE_ANGULAR_PORT=18093  #Angular
-export WEB_SERVICE_REACT_PORT=18094  #React
+export WEB_SERVICE_ANGULAR_PORT=18093  # Angular
+export WEB_SERVICE_REACT_PORT=18094    # React
 ```
 
-The recommended starting sequence to let everything find what it needs is:
+#### Service Startup Sequence
+
+Start services in this order to ensure proper dependencies:
 
 ```bash
-database
-reference-data
-trade-feed
-people-service
-account-service
-position-service
-trade-processor
-trade-service
-web-front-end
+1. database
+2. reference-data
+3. trade-feed
+4. people-service
+5. account-service
+6. position-service
+7. trade-processor
+8. trade-service
+9. web-front-end
 ```
 
-## Run locally within a Corporate Environments
+### Kubernetes
 
-When building locally in your company, if you are using a corporate artifact repository, you might need to override certain settings such as mavenCentral() in gradle, for the Java projects.
+Deploy to your local Kubernetes cluster using Tilt for development:
 
-In order to do this, we have designated a `.gitignore`'d folder where you can leave company-specific build scripts. This folder is not managed by git and can be modified locally.
+#### Prerequisites 
+- [Docker](https://www.docker.com/products/docker-desktop/) 
+- Kubernetes cluster ([Docker Desktop](https://docs.docker.com/desktop/kubernetes/), [Kind](https://kind.sigs.k8s.io/), [Minikube](https://minikube.sigs.k8s.io/docs/start/), or [k3s](https://k3s.io/))
+- [Ingress Controller](https://kubernetes.github.io/ingress-nginx/deploy/)
+- [Tilt](https://tilt.dev)
 
-### Local Gradle Use Case
+#### Deployment
 
-Create a `.corp` directory and in there you can create a `settings.gradle` file which will allow you to build all gradle projects
+```bash
+# Verify Kubernetes is running
+kubectl get pods
 
-```sh
-# in the traderX main directory
+# Navigate to GitOps directory
+cd ./gitops/local/
+
+# Start Tilt (opens browser at http://localhost:10350)
+tilt up
+
+# Clean up when done
+tilt down
+```
+
+For local development, uncomment specific services in the [Tiltfile](./gitops/local/Tiltfile) to build and deploy local images instead of pre-built ones.
+
+### GitHub Codespaces
+
+TraderX runs seamlessly in GitHub Codespaces:
+
+1. Click the **Code** button → **Codespaces** tab → **"..."** → **"New with options..."**
+2. Select **8-core machine** with **32GB RAM**
+3. Click **"Create codespace"**
+4. Once started, run: `docker compose up`
+5. Access at http://localhost:8080 (automatically forwarded)
+
+**Note**: Personal GitHub accounts receive 120 free core hours per month. See [GitHub Codespaces billing](https://docs.github.com/en/billing/managing-billing-for-github-codespaces/about-billing-for-github-codespaces#monthly-included-storage-and-core-hours-for-personal-accounts) for details.
+
+## Development
+
+### Corporate Environments
+
+When building in corporate environments with artifact repositories, you may need to override Maven/Gradle settings:
+
+#### Gradle Configuration
+
+Create a `.corp` directory for company-specific build scripts:
+
+```bash
+# In the traderX main directory
 mkdir .corp
+cd .corp
 touch settings.gradle
 ```
 
-The `settings.gradle` file should contain any overrides on your `repositories` and `plugins` block but should also contain these contents:
+Add repository overrides to `settings.gradle`:
 
 ```groovy
 rootProject.name = 'finos-traderX'
@@ -126,158 +368,32 @@ includeFlat 'trade-service'
 includeFlat 'trade-processor'
 ```
 
-This will include projects in directories at the same level as the .corp directory.
+Build using corporate settings:
 
-You can also store a separate gradle wrapper here, if you need the `distributionUrl` in your `gradle.properties`  to differ from the public internet one.
-
-To build and run these projects, you can do the following:
-
-```sh
-###### From traderX root #####
-# Note: gradle or ./gradlew can be used, depending on your path
-
+```bash
+# From traderX root
 gradle --settings-file .corp/settings.gradle build
-
-# Build specific project
-gradle --settings-file .corp/settings.gradle database:build
-
-# Run specific project
 gradle --settings-file .corp/settings.gradle account-service:bootRun
 
-##### From inside the .corp directory ####
+# From .corp directory
 cd .corp
 ./gradlew build
 ./gradlew account-service:bootRun
 ```
 
-## Run locally using Docker & Docker Compose
+## Project Demo
 
-The easiest way to run up the entire system is using Docker Compose. This should work on your local computer using Docker Desktop / Docker Compose (tested on Mac Silicon) and also in Github Codespaces. 
+Learn more about TraderX in this keynote demo from the [Open Source in Finance Forum 2023](https://events.linuxfoundation.org/open-source-finance-forum-new-york/):
 
-### Codespaces
-If using Github Codespaces it is recommended you select an 8-core type machine with 32GB RAM to ensure all the components have the required resources to start. 
+[![TraderX Overview Video - OSFF 2023](./docs/img/2023_osff_video_thumb.png)](https://youtu.be/tSKDJlRYkm0?list=PLmPXh6nBuhJueQS5q-5IU3-0vmZEIUbz0&t=400)
 
-To do this 
-* Select the Green Code menu at the top of this page
-* Select the Codespace tab then click the three dots '...' and select 'New with options...'.
-* Change the machine type to '8-core' and click 'Create codespace'
-
-As of writing, personal Github accounts receive 120 free core hours per month for using Codespaces, see the most recent details [here](https://docs.github.com/en/billing/managing-billing-for-github-codespaces/about-billing-for-github-codespaces#monthly-included-storage-and-core-hours-for-personal-accounts) 
-
-Once you have cloned the repository locally or once your Codespace has started, from the root traderX directory run
-```
-docker compose up
-```
-On first run this will build all of the containers from the project specific Dockerfile's and then start them in the correct sequence.
-
-The Docker containers are configured via Docker Compose to connect to a shred virtual network enabling them to communciate whether running on your local computer or via a Codespace.
-
-Once everything has started the WebUI will be accessible at http://localhost:8080 (even if using a codespace, the localhost URL will be mapped through from your local browser to the Codespace).
-
-
-## Run locally using Kubernetes
-
-Another easy way to run up the entire system is using Kubernetes (K8s), which using [tilt.dev](https://tilt.dev) also allows you to easily swap in locally built images. The following are instructions to deploy all TraderX apps to your local enviroment using [tilt.dev](https://tilt.dev) and kustomize files.
-
-### Prerequistes 
-- Install and run [Docker](https://www.docker.com/products/docker-desktop/) or similar
-- Install and run K8s - this could be one of the following well know distributions
-    - [K8s with Docker Desktop](https://docs.docker.com/desktop/kubernetes/)
-    - [Kind](https://kind.sigs.k8s.io/) 
-    - [Minikube](https://minikube.sigs.k8s.io/docs/start/)
-    - [k3s](https://k3s.io/) or similar
-- Install an [Ingress Controller](https://kubernetes.github.io/ingress-nginx/deploy/) - this will need to match your k8s distribution
-- Install [tilt.dev](https://tilt.dev)
-
-### Preflight checks
-
-```
-kubectl get pods
-```
-
-You should see the kube pods as well as your ingress controller. Example below:
-
-```
-NAMESPACE       NAME                                        READY   STATUS      RESTARTS   AGE
-ingress-nginx   ingress-nginx-admission-create-6rh79        0/1     Completed   0          38s
-ingress-nginx   ingress-nginx-admission-patch-f4kdg         0/1     Completed   1          38s
-ingress-nginx   ingress-nginx-controller-7d4db76476-7wfl2   1/1     Running     0          38s
-kube-system     coredns-7db6d8ff4d-ntdcr                    1/1     Running     0          4h8m
-kube-system     coredns-7db6d8ff4d-ptfcs                    1/1     Running     0          4h8m
-kube-system     etcd-docker-desktop                         1/1     Running     2          4h8m
-kube-system     kube-apiserver-docker-desktop               1/1     Running     2          4h8m
-kube-system     kube-controller-manager-docker-desktop      1/1     Running     2          4h8m
-kube-system     kube-proxy-qt5z4                            1/1     Running     0          4h8m
-kube-system     kube-scheduler-docker-desktop               1/1     Running     10         4h8m
-kube-system     storage-provisioner                         1/1     Running     0          4h8m
-```
-
-### Start Tilt.dev
-
-This command will deploy all the services to your local K8s environment.
-Note: Ensure all the [pre-requistes](#prerequistes) are complete
-
-After cloning the repo, you should `cd` into the folder (`cd traderx`)
-```
-# cd into gitops repo
-cd ./gitops/local/
-
-# Start Tilt
-tilt up
-```
-
-Expected Console Output:
-```
-Tilt started on http://localhost:10350/
-v0.30.2, built 2022-06-06
-
-(space) to open the browser
-(s) to stream logs (--stream=true)
-(t) to open legacy terminal mode (--legacy=true)
-(ctrl-c) to exit
-```
-
-This will download all the images and start them in your local k8s cluster. 
-
-Launching the tilt.dev local webpage will allow you to monitor the progress by pressing the space bar. Or use one of the other options from the console.
-
-Note: if you run `tilt up` and you get an error stating `template engine not found for: up.`. Your OS might be trying to run a ruby library, please check the tilt.dev installation instructions, or you path settings.
-
-
-### Start Tilt.dev
-
-### Local Developement
-
-With all the services running you can then chose which ones you actively build locally.
-
-If you go to your local [Tiltfile](./gitops/local/Tiltfile) you simply need to uncomment all the lines, or just for the respective applicaiton that you want to work on. Those applications will be built locally and deployed to your cluster instead of the host images. For example. In your local [Tiltfile](./gitops/local/Tiltfile) uncommenting the line for position_service will ask that Tilt.dev builds the images and your locally built image is deployed in your local k8s cluster in place of the prebuilt image from the Github Container Registry.
-
-```
-# Uncomment lines to use locally built version
-# docker_build('ghcr.io/finos/traderx/database', './../../database/.')
-# docker_build('ghcr.io/finos/traderx/account-service', './../../account-service/.')
-# docker_build('ghcr.io/finos/traderx/people-service', './../../people-service/.')
-docker_build('ghcr.io/finos/traderx/position-service', './../../position-service/.')
-# docker_build('ghcr.io/finos/traderx/reference-data', './../../reference-data/.')
-# docker_build('ghcr.io/finos/traderx/trade-feed', './../../trade-feed/.')
-# docker_build('ghcr.io/finos/traderx/trade-processor', './../../trade-processor/.')
-# docker_build('ghcr.io/finos/traderx/trade-service', './../../trade-service/.')
-# docker_build('ghcr.io/finos/traderx/web-front-end-angular', './../../web-front-end/angular/.')
-yaml = kustomize(('./traderx'))
-print(yaml)
-k8s_yaml(yaml)
-```
-
-### Clean up
-
-Simply stop tilt and then run  `tilt down` 
-
-# Getting Involved
+## Getting Involved
 
 ### Project Meetings
 
-A great way to interact with the TraderX community is to attend the bi-weekly Friday TraderX meetings.
-Email help@finos.org to be added to the meeting invite directly, or find the meeting in the [FINOS Community Calendar](https://calendar.finos.org/).
+Join the bi-weekly Friday TraderX community meetings:
+- Email help@finos.org to be added to the meeting invite
+- Find meetings in the [FINOS Community Calendar](https://calendar.finos.org/)
 
 ## Contributing
 
