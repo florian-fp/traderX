@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'main/environments/environment';
-import { VoiceTradeService, VoiceCommand } from '../../../shared/voice-service';
+import { VoiceTradeService, VoiceCommand } from '../../../../shared/voice-service';
 
 @Injectable({
     providedIn: 'root'

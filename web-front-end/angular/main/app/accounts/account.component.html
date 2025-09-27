@@ -1,22 +1,87 @@
-<div class="p-5 pt-3">
-    <div class="d-flex flex-column">
-        <app-edit-account (update)="onUpdate($event)" [account]="accountToBeUpdate"></app-edit-account>
-        <div class="mt-4">
-            <h6> Account List </h6>
-            <ag-grid-angular #agGrid style="width: 800px; height: 300px;" id="accountgrid" class="ag-theme-alpine"
-                [columnDefs]="columnDefs" rowSelection='single' [components]="frameworkComponents"
-                [rowData]="accounts$ | async" (selectionChanged)="onSelectionChanged()"
-                (gridReady)="onGridReady($event)"></ag-grid-angular>
+<div class="account-page">
+    <div class="page-header">
+        <h2 class="page-title">Account Management</h2>
+        <p class="page-subtitle">Manage trading accounts and user assignments</p>
+    </div>
+
+    <div class="account-management-section">
+        <div class="account-editor-card modern-container">
+            <div class="card-header">
+                <h5><i class="fas fa-edit me-2"></i>Account Editor</h5>
+            </div>
+            <div class="card-content">
+                <app-edit-account (update)="onUpdate($event)" [account]="accountToBeUpdate"></app-edit-account>
+            </div>
+        </div>
+
+        <div class="account-list-card modern-container">
+            <div class="card-header">
+                <h5><i class="fas fa-list me-2"></i>Account List</h5>
+                <div class="account-stats">
+                    <span class="stat-item">
+                        <i class="fas fa-users me-1"></i>
+                        {{ (accounts$ | async)?.length || 0 }} accounts
+                    </span>
+                </div>
+            </div>
+            <div class="card-content">
+                <ag-grid-angular 
+                    #agGrid 
+                    style="width: 100%; height: 350px;" 
+                    id="accountgrid" 
+                    class="ag-theme-alpine modern-grid"
+                    [columnDefs]="columnDefs" 
+                    rowSelection='single' 
+                    [components]="frameworkComponents"
+                    [rowData]="accounts$ | async" 
+                    (selectionChanged)="onSelectionChanged()"
+                    (gridReady)="onGridReady($event)">
+                </ag-grid-angular>
+            </div>
         </div>
     </div>
 
-    <div class="mt-4">
-        <app-assign-user class="mt-2" (update)="onUpdate($event)" [account]="selectedAccount" [accounts]="accounts$ | async"></app-assign-user>
-        <div class="mt-4">
-            <h6>Users List {{selectedAccount ? '(' + selectedAccount.displayName + ')' : ''}}</h6>
-            <ag-grid-angular #agGrid style="width: 800px; height: 300px;" id="usergrid" class="ag-theme-alpine"
-                [columnDefs]="columnDefsUser" [components]="frameworkComponents" [rowData]="users$ | async">
-            </ag-grid-angular>
+    <div class="user-management-section">
+        <div class="user-assignment-card modern-container">
+            <div class="card-header">
+                <h5><i class="fas fa-user-plus me-2"></i>User Assignment</h5>
+            </div>
+            <div class="card-content">
+                <app-assign-user 
+                    (update)="onUpdate($event)" 
+                    [account]="selectedAccount" 
+                    [accounts]="accounts$ | async">
+                </app-assign-user>
+            </div>
+        </div>
+
+        <div class="user-list-card modern-container">
+            <div class="card-header">
+                <h5>
+                    <i class="fas fa-users me-2"></i>
+                    Users List 
+                    <span class="account-badge" *ngIf="selectedAccount">
+                        {{ selectedAccount.displayName }}
+                    </span>
+                </h5>
+                <div class="user-stats">
+                    <span class="stat-item">
+                        <i class="fas fa-user me-1"></i>
+                        {{ (users$ | async)?.length || 0 }} users
+                    </span>
+                </div>
+            </div>
+            <div class="card-content">
+                <ag-grid-angular 
+                    #agGrid 
+                    style="width: 100%; height: 350px;" 
+                    id="usergrid" 
+                    class="ag-theme-alpine modern-grid"
+                    [columnDefs]="columnDefsUser" 
+                    [components]="frameworkComponents" 
+                    [rowData]="users$ | async">
+                </ag-grid-angular>
+            </div>
         </div>
     </div>
 </div>

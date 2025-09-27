@@ -53,13 +53,13 @@ export class VoiceRecognitionService {
 
       this.isListening = true;
 
-      this.recognition.onresult = (event) => {
+      this.recognition.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
         this.isListening = false;
         resolve(transcript);
       };
 
-      this.recognition.onerror = (event) => {
+      this.recognition.onerror = (event: any) => {
         this.isListening = false;
         reject(new Error(`Speech recognition error: ${event.error}`));
       };

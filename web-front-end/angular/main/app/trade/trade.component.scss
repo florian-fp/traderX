@@ -1,30 +1,113 @@
-.trade-container {
+.trade-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+    background-color: var(--surface-variant);
+    min-height: calc(100vh - 200px);
+}
+
+.page-header {
+    margin-bottom: var(--spacing-xl);
+    text-align: center;
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--on-surface);
+    margin-bottom: var(--spacing-sm);
+}
+
+.page-subtitle {
+    color: var(--on-surface-variant);
+    font-size: var(--font-size-lg);
+    margin-bottom: 0;
+}
+
+.trade-controls-card {
+    margin-bottom: var(--spacing-xl);
+}
+
+.controls-header {
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.controls-header h5 {
+    margin: 0;
+    color: var(--on-surface);
+    font-weight: var(--font-weight-semibold);
     display: flex;
-    flex-direction: column;
-    margin-top: 20px;
+    align-items: center;
+}
 
-    .trade-blotter {
-        padding: 5px;
-    }
+.controls-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-lg);
+    align-items: end;
+}
 
-    .trade-ops {
-        display: flex;
-        justify-content:  flex-start;        
+.account-selector {
+    flex: 1;
+    min-width: 250px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.action-buttons .btn {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-weight: var(--font-weight-medium);
+}
+
+.alerts-section {
+    margin-top: var(--spacing-lg);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--border-color);
+}
+
+.blotter-section {
+    margin-top: var(--spacing-xl);
+}
+
+.blotter-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-lg);
+}
+
+.trade-blotter-card,
+.position-blotter-card {
+    min-height: 400px;
+}
+
+@media (max-width: 768px) {
+    .trade-page {
+        padding: var(--spacing-md);
     }
     
-    .trade-blotter {
-        display: flex;
-        &-items {
-         flex-basis: 60%;
-         min-width: 300px;
-        }
+    .controls-content {
+        flex-direction: column;
+        align-items: stretch;
     }
-    .position-blotter {
-        display: flex;
-        &-items {
-         flex-basis: 40%;
-         min-width: 300px;
-        }
+    
+    .action-buttons {
+        justify-content: center;
+    }
+    
+    .blotter-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
     }
 }
 

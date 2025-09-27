@@ -1,3 +1,133 @@
+.trade-ticket-modal {
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.modal-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+    color: white;
+    padding: var(--spacing-lg);
+    border-bottom: none;
+}
+
+.modal-title {
+    margin: 0;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    display: flex;
+    align-items: center;
+}
+
+.modal-body {
+    padding: var(--spacing-xl);
+}
+
+.trade-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    font-weight: var(--font-weight-medium);
+    color: var(--on-surface);
+    margin-bottom: var(--spacing-sm);
+    display: flex;
+    align-items: center;
+}
+
 .form-control {
-    width: 200px;
+    width: 100%;
+    padding: var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-base);
+    transition: var(--transition);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+}
+
+.form-control:disabled {
+    background-color: var(--surface-variant);
+    color: var(--on-surface-variant);
+}
+
+.side-selector {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.side-btn {
+    flex: 1;
+    padding: var(--spacing-md);
+    border: 2px solid var(--border-color);
+    background-color: var(--surface-color);
+    color: var(--on-surface-variant);
+    border-radius: var(--border-radius);
+    font-weight: var(--font-weight-medium);
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.side-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.buy-btn.active {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+    color: white;
+}
+
+.sell-btn.active {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+    color: white;
+}
+
+.modal-footer {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    background-color: var(--surface-variant);
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: flex-end;
+}
+
+.modal-footer .btn {
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-weight: var(--font-weight-medium);
+    display: flex;
+    align-items: center;
+}
+
+@media (max-width: 576px) {
+    .trade-ticket-modal {
+        margin: var(--spacing-md);
+        max-width: none;
+    }
+    
+    .modal-footer {
+        flex-direction: column;
+    }
+    
+    .modal-footer .btn {
+        width: 100%;
+        justify-content: center;
+    }
 }

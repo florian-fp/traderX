@@ -1,40 +1,57 @@
-<div class="trade-container p-5">
-    <div class="trade-ops mb-4">
-        <div class="trade-filter me-3">
-            <app-ngx-dropdown
-                name="account"
-                [items]="accounts"
-                itemKey="displayName"
-                [selectedItem]="accountModel"
-                placeholder="Select Account"
-                (selectedItemChange)="onAccountChange($event)"
-            >
-            </app-ngx-dropdown>
+<div class="trade-page">
+    <div class="page-header">
+        <h2 class="page-title">Trading Dashboard</h2>
+        <p class="page-subtitle">Execute trades and monitor your positions</p>
+    </div>
+
+    <div class="trade-controls-card modern-container">
+        <div class="controls-header">
+            <h5><i class="fas fa-cog me-2"></i>Trading Controls</h5>
         </div>
-        <div class="trade-ticket mb-4">
-            <button type="button" id="createTicketBtn" class="btn btn-sm btn-primary mb-2" (click)="openTicket(ticketComponent)">
-                Create Trade Ticket
-            </button>
-            <button 
-                type="button" 
-                class="btn btn-success ms-2 mb-2" 
-                (click)="startVoiceCommand()" 
-                [disabled]="isVoiceListening || !accountModel"
-                *ngIf="isVoiceSupported()">
-                <i class="fas fa-microphone" [class.fa-spin]="isVoiceListening"></i>
-                {{ isVoiceListening ? 'Listening...' : 'Voice Trade' }}
-            </button>
-            <button 
-                type="button" 
-                class="btn btn-warning ms-2 mb-2" 
-                (click)="stopVoiceCommand()" 
-                *ngIf="isVoiceListening">
-                Stop
-            </button>
-            <ng-template #ticketComponent>
-                <app-trade-ticket [stocks]="stocks" [account]="accountModel" (create)="createTradeTicket($event)" (cancel)="closeTicket()">
-                </app-trade-ticket>
-            </ng-template>
+        
+        <div class="controls-content">
+            <div class="account-selector">
+                <label class="form-label">Select Account</label>
+                <app-ngx-dropdown
+                    name="account"
+                    [items]="accounts"
+                    itemKey="displayName"
+                    [selectedItem]="accountModel"
+                    placeholder="Choose your trading account"
+                    (selectedItemChange)="onAccountChange($event)"
+                >
+                </app-ngx-dropdown>
+            </div>
+            
+            <div class="action-buttons">
+                <button type="button" id="createTicketBtn" class="btn btn-primary" (click)="openTicket(ticketComponent)">
+                    <i class="fas fa-plus me-2"></i>Create Trade Ticket
+                </button>
+                <button 
+                    type="button" 
+                    class="btn btn-success" 
+                    (click)="startVoiceCommand()" 
+                    [disabled]="isVoiceListening || !accountModel"
+                    *ngIf="isVoiceSupported()">
+                    <i class="fas fa-microphone me-2" [class.fa-spin]="isVoiceListening"></i>
+                    {{ isVoiceListening ? 'Listening...' : 'Voice Trade' }}
+                </button>
+                <button 
+                    type="button" 
+                    class="btn btn-warning" 
+                    (click)="stopVoiceCommand()" 
+                    *ngIf="isVoiceListening">
+                    <i class="fas fa-stop me-2"></i>Stop
+                </button>
+            </div>
+        </div>
+
+        <ng-template #ticketComponent>
+            <app-trade-ticket [stocks]="stocks" [account]="accountModel" (create)="createTradeTicket($event)" (cancel)="closeTicket()">
+            </app-trade-ticket>
+        </ng-template>
+
+        <div class="alerts-section" *ngIf="createTicketResponse || voiceCommand || voiceError">
             <alert
                 *ngIf="createTicketResponse"
                 [type]="createTicketResponse.success ? 'success' : 'danger'"
@@ -42,13 +59,16 @@
                 [dismissOnTimeout]="2000"
                 (onClosed)="onCloseAlert()"
             >
-                {{ createTicketResponse | json }}</alert
-            >
+                <i class="fas fa-check-circle me-2" *ngIf="createTicketResponse.success"></i>
+                <i class="fas fa-exclamation-triangle me-2" *ngIf="!createTicketResponse.success"></i>
+                {{ createTicketResponse | json }}
+            </alert>
             
             <alert
                 *ngIf="voiceCommand"
                 type="info"
                 [dismissible]="true">
+                <i class="fas fa-microphone me-2"></i>
                 <strong>Voice Command:</strong> {{ voiceCommand }}
             </alert>
             
@@ -56,13 +76,20 @@
                 *ngIf="voiceError"
                 type="danger"
                 [dismissible]="true">
+                <i class="fas fa-exclamation-circle me-2"></i>
                 <strong>Voice Error:</strong> {{ voiceError }}
             </alert>
         </div>
     </div>
 
-    <div class="trade-blotter">
-        <app-trade-blotter [account]="accountModel" class="trade-blotter-items me-2"> </app-trade-blotter>
-        <app-position-blotter [account]="accountModel" class="position-blotter-items"> </app-position-blotter>
+    <div class="blotter-section">
+        <div class="blotter-grid">
+            <div class="trade-blotter-card modern-container">
+                <app-trade-blotter [account]="accountModel"></app-trade-blotter>
+            </div>
+            <div class="position-blotter-card modern-container">
+                <app-position-blotter [account]="accountModel"></app-position-blotter>
+            </div>
+        </div>
     </div>
 </div>

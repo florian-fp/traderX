@@ -7,7 +7,7 @@ import { Stock } from '../model/symbol.model';
 import { SymbolService } from '../service/symbols.service';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { AngularVoiceTradeService } from '../service/voice-trade.service';
-import { VoiceCommand } from '../../../shared/voice-service';
+import { VoiceCommand } from '../../../../shared/voice-service';
 
 @Component({
     selector: 'app-trade',
